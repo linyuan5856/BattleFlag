@@ -7,6 +7,7 @@ public class HexGrid : MonoBehaviour
     [SerializeField] private int height = 6;
     [SerializeField] private HexCell cellPrefab;
     [SerializeField] private Text cellText;
+    [SerializeField] private Color defaultColor = Color.white;
 
     private HexCell[] cells;
     private Canvas hexCanvas;
@@ -33,30 +34,21 @@ public class HexGrid : MonoBehaviour
         hexMesh.Triangulate(cells);
     }
 
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-            HandleInput();
-    }
 
-    private void HandleInput()
+    public void ColorCell(Vector3 position, Color color)
     {
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out var hit))
-            TouchCell(hit.point);
-    }
-
-    private void TouchCell(Vector3 pos)
-    {
-        var localPos = transform.InverseTransformPoint(pos);
-        var coordinates = HexCoordinates.FromPosition(localPos);
-        Debug.Log(coordinates.ToString());
+        position = transform.InverseTransformPoint(position);
+        HexCoordinates coordinates = HexCoordinates.FromPosition(position);
+        int index = coordinates.X + coordinates.Z * width + coordinates.Z / 2;
+        HexCell cell = cells[index];
+        cell.CellColor = color;
+        hexMesh.Triangulate(cells);
     }
 
     void CreateCell(int x, int z, int i)
     {
         Vector3 pos;
-        pos.x = (x + z * 0.5f - z/2) * (HexMetrics.InnerRadius * 2f);
+        pos.x = (x + z * 0.5f - z / 2) * (HexMetrics.InnerRadius * 2f);
         pos.y = 0f;
         pos.z = z * (HexMetrics.OuterRadius * 1.5f);
 
@@ -64,6 +56,7 @@ public class HexGrid : MonoBehaviour
         cell.transform.SetParent(transform, false);
         cell.transform.localPosition = pos;
         cell.Coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
+        cell.CellColor = defaultColor;
 
         Text txt = Instantiate(cellText);
         txt.transform.SetParent(hexCanvas.transform, false);

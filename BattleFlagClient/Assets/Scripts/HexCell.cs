@@ -5,15 +5,13 @@ using UnityEngine;
 public class HexCell : MonoBehaviour
 {
     public HexCoordinates Coordinates;
+
+    public Color CellColor;
     // Start is called before the first frame update
     void Start()
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+   
 }
