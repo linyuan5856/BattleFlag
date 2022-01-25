@@ -58,8 +58,24 @@ public class HexGrid : MonoBehaviour
         cell.Coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
         cell.CellColor = defaultColor;
 
+        if (x > 0)
+            cell.SetNeighbor(HexDirection.W, cells[i - 1]);
+        if (z > 0)
+        {
+            if ((z & 1) == 0) //偶数
+            {
+                cell.SetNeighbor(HexDirection.SE, cells[i - width]);
+                if (x > 0) cell.SetNeighbor(HexDirection.SW, cells[i - width - 1]);
+            }
+            else
+            {
+                cell.SetNeighbor(HexDirection.SW, cells[i - width]);
+                if (x < width - 1) cell.SetNeighbor(HexDirection.SE, cells[i - width + 1]);
+            }
+        }
+
         Text txt = Instantiate(cellText);
-        txt.transform.SetParent(hexCanvas.transform, false);
+        txt.rectTransform.SetParent(hexCanvas.transform, false);
         txt.rectTransform.anchoredPosition = new Vector2(pos.x, pos.z);
         txt.text = cell.Coordinates.ToStringOnSeparateLines();
     }
